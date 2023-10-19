@@ -196,12 +196,26 @@ public class InputToCommand : MonoBehaviour
     public string InputText()
     {
         string res = "输入：\n";
-        for (int i = 0; i < _input.Count; i++)
+        Dictionary<KeyMap, int> pCount = new Dictionary<KeyMap, int>
         {
-            if (_input[i].Key== KeyMap.NoInput) continue;
-            
+            {KeyMap.Punch, 0},
+            {KeyMap.Kick, 0},
+            {KeyMap.Up, 0},
+            {KeyMap.UpForward, 0},
+            {KeyMap.Forward, 0},
+            {KeyMap.DuckForward, 0},
+            {KeyMap.Duck, 0},
+            {KeyMap.DuckBackward, 0},
+            {KeyMap.Backward, 0},
+            {KeyMap.UpBackward, 0},
+        };
+        for (int i = 0; i < _input.Count; i++)
+            if (pCount.ContainsKey(_input[i].Key)) pCount[_input[i].Key] += 1;
+        
+        foreach (KeyValuePair<KeyMap,int> pair in pCount)
+        {
             string keyText = "";
-            switch (_input[i].Key)
+            switch (pair.Key)
             {
                 case KeyMap.Punch: keyText = "【拳】"; break;
                 case KeyMap.Kick: keyText = "【脚】"; break;
@@ -215,7 +229,17 @@ public class InputToCommand : MonoBehaviour
                 case KeyMap.DuckBackward: keyText = "【↙】"; break;
             }
 
-            res += _input[i].TimeStamp.ToString("F2") + " : " + keyText + "\n";
+            bool hasNew = false;
+            foreach (KeyInputRecord record in _newInputs)
+            {
+                if (record.Key == pair.Key)
+                {
+                    hasNew = true;
+                    break;
+                }
+            }
+
+            res += keyText + " x " + pair.Value + " 次" + (hasNew ? "【新输入】":"") +  "\n";
         }
 
         return res;
