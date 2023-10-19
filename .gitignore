@@ -5,3 +5,5 @@ obj/
 Temp/
 UserSettings/
 WindowsGame/
+*.zip
+*.7z
