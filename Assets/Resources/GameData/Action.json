@@ -1,0 +1,662 @@
+﻿{
+    "data":[
+        {
+            "id":"BoxingStand",
+            "animKey":"BoxingStand",
+            "catalog":"Stand",
+            "cancelTag":[],
+            "beCancelledTag":[
+                {
+                    "percentageRange":{"min":0, "max":1},
+                    "cancelTag":["InitAction"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attacks": [],
+            "attackPhase": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"BoxingMoveForward",
+            "animKey":"BoxingForward",
+            "catalog":"Stand",
+            "keepPlayingAnim": true,
+            "autoTerminate": true,
+            "cancelTag":[
+                {
+                    "tag":"InitAction",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag":[
+                {
+                    "percentageRange":{"min":0, "max":1},
+                    "cancelTag":["InitAction"],
+                    "fadeOutPercentage":0.05,
+                    "priority": 1
+                }
+            ],
+            "tempBeCancelledTag":[],
+            "commands":[
+                {
+                    "keySequence":[6],
+                    "validInSec":0.01
+                }
+            ],
+            "inputAcceptance": [{
+                "range": {"min": 0, "max": 1},
+                "rate": 1
+            }],
+            "autoNextActionId":"BoxingStand",
+            "attacks": [],
+            "attackPhase": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"BoxingMoveBackward",
+            "animKey":"BoxingBackward",
+            "catalog":"Stand",
+            "keepPlayingAnim": true,
+            "autoTerminate": true,
+            "cancelTag":[
+                {
+                    "tag":"InitAction",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag":[
+                {
+                    "percentageRange":{"min":0, "max":1},
+                    "cancelTag":["InitAction"],
+                    "fadeOutPercentage":0.05
+                },
+                {
+                    "percentageRange":{"min":0.8, "max":1},
+                    "cancelTag":["TurnBack"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "tempBeCancelledTag":[],
+            "commands":[
+                {
+                    "keySequence":[4],
+                    "validInSec":0
+                }
+            ],
+            "inputAcceptance": [{
+                "range": {"min": 0, "max": 1},
+                "rate": 0.7
+            }],
+            "autoNextActionId":"BoxingStand",
+            "attacks": [],
+            "attackPhase": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"HurtFromForward",
+            "说明": [
+                "受伤从不同的角度有不同的动作，其实这些动作之间的Cancel等具体信息都是不同的",
+                "比如我们希望背后受击惩罚大一些，不可以做出一些反击动作等，那么背后的Cancel与正面的就不同了",
+                "“无敌时间”（其实是关闭受击框的帧）也可以是各不相同的，在这demo我就偷懒了，全都一样吧，配表累死了XD",
+                "虽然Unity有BlendTree，UE有BlendSpace，但是这些都是做回合制游戏的多方向动作的，不适合动作游戏",
+                "UE比Unity“好”的地方在于Notify和NotifyState是跟着Montage的，这样动作里面的参数正好一样，所以只要做成animKey是根据情况选的就行了",
+                "但是这其实对于做动作游戏是个错误的抽象，做魂系怎么做都无所谓，魂系毕竟是回合制，所以受伤动作没那么讲究，几个里面随机抽、甚至按照伤害大小都没问题",
+                "但是动作游戏有一点严肃的——不管你伤害什么的“周边玩意儿”如何，你挨打做什么受击动作，应该是取决于攻击动作的",
+                "很好理解，我脚踹脸，无论被踹到的是什么人，只要踹到脸反应都是脸被踹，只是被踹之后还能站住或者就躺了（Hp残余多少）各不相同",
+                "所以值得注意的是，受伤在这个demo分了Hurt和Beaten，就是这个原理，他不是回合制游戏，在动作游戏里受伤动作本身都是严肃的"
+            ],
+            "animKey":"HurtFromFront",
+            "catalog":"Hurt",
+            "cancelTag":[],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [],
+            "attacks": [],
+            "defensePhase":[
+                {
+                    "说明": "受击动作总得有一段无敌帧的",
+                    "inPercentage":[{"min":0.65, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":5
+                    }
+                }
+            ]
+        },
+        {
+            "id":"HurtFromBackward",
+            "animKey":"HurtFromBack",
+            "catalog":"Hurt",
+            "cancelTag":[],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [],
+            "attacks": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0.65, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":5
+                    }
+                }
+            ]
+        },
+        {
+            "id":"BeatenFromForward",
+            "animKey":"BeatenFromFront",
+            "catalog":"Beaten",
+            "cancelTag":[],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [],
+            "attacks": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0.65, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":5
+                    }
+                }
+            ]
+        },
+        {
+            "id":"BeatenFromBackward",
+            "animKey":"BeatenFromBack",
+            "catalog":"Beaten",
+            "cancelTag":[],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [],
+            "attacks": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0.65, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":5
+                    }
+                }
+            ]
+        },
+        {
+            "id":"TurnBack",
+            "说明": "专门的转身动作，这个游戏中，我们让角色会倒退一段距离然后才转身",
+            "animKey":"BoxingBackward",
+            "catalog":"Stand",
+            "keepPlayingAnim": false,
+            "autoTerminate": false,
+            "flip": true,
+            "cancelTag":[
+                {
+                    "tag":"TurnBack",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag":[
+                {
+                    "percentageRange":{"min":0, "max":1},
+                    "cancelTag":["InitAction"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "tempBeCancelledTag":[],
+            "commands":[
+                {
+                    "keySequence":[4],
+                    "validInSec":0
+                }
+            ],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attacks": [],
+            "attackPhase": [],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"Punch1",
+            "animKey":"Punch1",
+            "catalog":"Punch",
+            "cancelTag":[
+                {
+                    "tag":"InitAction",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag": [],
+            "tempBeCancelledTag":[
+                {
+                    "id":"PunchCombo1",
+                    "percentage":0.1,
+                    "cancelTag":["Punch1"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "commands":[
+                {
+                    "keySequence":[100],
+                    "validInSec":0.05
+                }
+            ],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [
+                {
+                    "inPercentage": [{"min": 0.3, "max": 0.43}],
+                    "tag":["LeftPunch"],
+                    "attackPhase": 0,
+                    "priority": 0
+                }
+            ],
+            "attacks": [
+                {
+                    "phase": 0,
+                    "attack": 0.3,
+                    "forceDir": 0,
+                    "pushPower": {
+                        "moveDistance": {"x": 0.6, "y": 0, "z": 0},
+                        "inSec": 0.08,
+                        "tweenMethod": "Slower"
+                    },
+                    "hitStun": 0.22,
+                    "freeze": 0.15,
+                    "canHitSameTarget": 1,
+                    "hitSameTargetDelay": 1,
+                    "selfActionChange": {
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "targetActionChange": {
+                        "changeType":2,
+                        "param":"Hurt",
+                        "priority":5
+                    },
+                    "tempBeCancelledTagTurnOn": ["PunchCombo1"]
+                }
+            ],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"Kick1",
+            "animKey":"Kick1",
+            "catalog":"Kick",
+            "cancelTag":[
+                {
+                    "tag":"InitAction",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag":[
+                {
+                    "percentageRange":{"min":0.58, "max":0.9},
+                    "cancelTag":["TwinKickWhileKick1"],
+                    "fadeOutPercentage":0.05,
+                    "priority":1
+                }
+            ],
+            "tempBeCancelledTag":[
+                {
+                    "id":"KickCombo1",
+                    "percentage":0.1,
+                    "cancelTag":["Kick1"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "commands":[
+                {
+                    "keySequence":[101],
+                    "validInSec":0.05
+                }
+            ],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [
+                {
+                    "inPercentage": [{"min": 0.35, "max": 0.44}],
+                    "tag":["RightKick"],
+                    "attackPhase": 0,
+                    "priority": 0
+                }
+            ],
+            "attacks": [
+                {
+                    "phase": 0,
+                    "attack": 0.3,
+                    "forceDir": 0,
+                    "pushPower": {
+                        "moveDistance": {"x": 0.6, "y": 0, "z": 0},
+                        "inSec": 0.08,
+                        "tweenMethod": "Slower"
+                    },
+                    "hitStun": 0.22,
+                    "freeze": 0.15,
+                    "canHitSameTarget": 1,
+                    "hitSameTargetDelay": 1,
+                    "selfActionChange": {
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "targetActionChange": {
+                        "changeType":2,
+                        "param":"Hurt",
+                        "priority":5
+                    },
+                    "tempBeCancelledTagTurnOn": ["KickCombo1"]
+                }
+            ],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ],
+            "rootMotionTween": {
+                "method": "GoStraight",
+                "param": ["0.3"]
+            }
+        },
+        {
+            "id":"TwinKick",
+            "animKey":"TwinKick",
+            "catalog":"Skill",
+            "cancelTag":[
+                {
+                    "tag":"InitAction",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05,
+                    "priority":0
+                },
+                {
+                    "tag":"TwinKickWhileKick1",
+                    "startFromPercentage":0.1,
+                    "fadeInPercentage":0.05,
+                    "priority":1
+                }
+            ],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[
+                {
+                    "keySequence":[2,3,6,101],
+                    "validInSec":0.1
+                }
+            ],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [
+                {
+                    "inPercentage": [{"min": 0.28, "max": 0.34}],
+                    "tag":["LeftKick"],
+                    "attackPhase": 0,
+                    "priority": 0
+                }
+            ],
+            "attacks": [
+                {
+                    "phase": 0,
+                    "attack": 0.25,
+                    "forceDir": 0,
+                    "pushPower": {
+                        "moveDistance": {"x": 0.1, "y": 0, "z": 0},
+                        "inSec": 0.02,
+                        "tweenMethod": ""
+                    },
+                    "hitStun": 0.22,
+                    "freeze": 0.15,
+                    "canHitSameTarget": 1,
+                    "hitSameTargetDelay": 1,
+                    "selfActionChange": {
+                        "changeType":1,
+                        "param":"TwinKickAutoCombo",
+                        "priority":0
+                    },
+                    "targetActionChange": {
+                        "changeType":2,
+                        "param":"Hurt",
+                        "priority":5
+                    },
+                    "tempBeCancelledTagTurnOn": []
+                }
+            ],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        },
+        {
+            "id":"TwinKickAutoCombo",
+            "animKey":"TwinKick2",
+            "catalog":"Skill",
+            "cancelTag":[],
+            "beCancelledTag":[],
+            "tempBeCancelledTag":[],
+            "commands":[],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [
+                {
+                    "inPercentage": [{"min": 0.36, "max": 0.5}],
+                    "tag":["LeftKick"],
+                    "attackPhase": 0,
+                    "priority": 0
+                }
+            ],
+            "attacks": [
+                {
+                    "phase": 0,
+                    "attack": 0.6,
+                    "forceDir": 0,
+                    "pushPower": {
+                        "moveDistance": {"x": 0.7, "y": 0, "z": 0},
+                        "inSec": 0.18,
+                        "tweenMethod": ""
+                    },
+                    "hitStun": 0.22,
+                    "freeze": 0.15,
+                    "canHitSameTarget": 1,
+                    "hitSameTargetDelay": 1,
+                    "selfActionChange": {
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "targetActionChange": {
+                        "changeType":2,
+                        "param":"Beaten",
+                        "priority":5
+                    },
+                    "tempBeCancelledTagTurnOn": []
+                }
+            ],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ]
+        }
+    ]
+}
