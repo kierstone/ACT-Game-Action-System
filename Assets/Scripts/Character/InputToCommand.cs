@@ -71,9 +71,8 @@ public class InputToCommand : MonoBehaviour
                 AddInput(KeyMap.Kick);
                 noKey = false;
             }
-            
 
-            float xInput = Input.GetAxis("Horizontal") * (inversed ? -1.00f : 1.00f);
+            float xInput = Input.GetAxis("Horizontal");
             float yInput = Input.GetAxis("Vertical");
             float deadArea = 0.2f;
             bool xHasInput = Mathf.Abs(xInput) >= deadArea;
@@ -87,8 +86,8 @@ public class InputToCommand : MonoBehaviour
                 else dirDown[2] = true;
 
             if (yHasInput)
-                if (yInput > 0) dirDown[1] = true;
-                else dirDown[0] = true;
+                if (yInput > 0) dirDown[0] = true;
+                else dirDown[1] = true;
 
             //这里不能else，因为可能同一帧有8个方向的输入的，但是unity和ue的input都自作聪明的屏蔽了……
             //尽管他们有问题，但我们不能有问题
@@ -135,7 +134,7 @@ public class InputToCommand : MonoBehaviour
             //所以我们宁可牺牲一些性能，也要追求精准
             for (int j = 0; j < _input.Count; j++)
             {
-                if (_input[j].TimeStamp >= lastStamp && _input[j].Key == action.keySequence[i])
+                if (_input[j].TimeStamp >= lastStamp && GetKeyInput(_input[j].Key) == action.keySequence[i])
                 {
                     found = true;
                     lastStamp = _input[j].TimeStamp;
@@ -152,7 +151,7 @@ public class InputToCommand : MonoBehaviour
             {
                 for (int j = 0; j < _newInputs.Count; j++)
                 {
-                    if (_newInputs[j].Key == action.keySequence[i])
+                    if (GetKeyInput(_newInputs[j].Key) == action.keySequence[i])
                     {
                         found = true;
                         lastStamp = _newInputs[j].TimeStamp;
@@ -166,6 +165,60 @@ public class InputToCommand : MonoBehaviour
         }
 
         return true;    //肯定找到了才会到这里
+    }
+
+    /// <summary>
+    /// 根据origin和inversed得出实际上输入是什么
+    /// 我们毕竟有左右方向正反手搓招的
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <returns></returns>
+    private KeyMap GetKeyInput(KeyMap origin)
+    {
+        if (!inversed) return origin;
+        switch (origin)
+        {
+            case KeyMap.Backward: return KeyMap.Forward;
+            case KeyMap.Forward: return KeyMap.Backward;
+            case KeyMap.DuckBackward: return KeyMap.DuckForward;
+            case KeyMap.DuckForward: return KeyMap.DuckBackward;
+            case KeyMap.UpBackward: return KeyMap.UpForward;
+            case KeyMap.UpForward: return KeyMap.UpBackward;
+        }
+
+        return origin;
+    }
+
+    /// <summary>
+    /// 获得输入列表所组成的文字
+    /// </summary>
+    /// <returns></returns>
+    public string InputText()
+    {
+        string res = "输入：\n";
+        for (int i = 0; i < _input.Count; i++)
+        {
+            if (_input[i].Key== KeyMap.NoInput) continue;
+            
+            string keyText = "";
+            switch (_input[i].Key)
+            {
+                case KeyMap.Punch: keyText = "【拳】"; break;
+                case KeyMap.Kick: keyText = "【脚】"; break;
+                case KeyMap.Backward: keyText = "【←】"; break;
+                case KeyMap.UpBackward: keyText = "【↖】"; break;
+                case KeyMap.Up: keyText = "【↑】"; break;
+                case KeyMap.UpForward: keyText = "【↗】"; break;
+                case KeyMap.Forward: keyText = "【→】"; break;
+                case KeyMap.DuckForward: keyText = "【↘】"; break;
+                case KeyMap.Duck: keyText = "【↓】"; break;
+                case KeyMap.DuckBackward: keyText = "【↙】"; break;
+            }
+
+            res += _input[i].TimeStamp.ToString("F2") + " : " + keyText + "\n";
+        }
+
+        return res;
     }
 }
 

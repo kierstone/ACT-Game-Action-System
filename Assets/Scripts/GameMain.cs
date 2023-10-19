@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameMain : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class GameMain : MonoBehaviour
     /// 至少是走代码创建，而不是直接丢在场景里，然后拖到inspector
     /// </summary>
     public List<CharacterObj> enemy;
+
+    public Text inputText;
     
     void Awake()
     {
@@ -42,6 +45,10 @@ public class GameMain : MonoBehaviour
         {
             ene.transform.position += ene.ThisTickMove(dt);
         }
+        
+        
+        //UI简单处理
+        inputText.text = player.input.InputText();
     }
 
     private void LateUpdate()

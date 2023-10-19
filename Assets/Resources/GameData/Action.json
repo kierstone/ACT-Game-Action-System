@@ -163,6 +163,7 @@
                 "所以值得注意的是，受伤在这个demo分了Hurt和Beaten，就是这个原理，他不是回合制游戏，在动作游戏里受伤动作本身都是严肃的"
             ],
             "animKey":"HurtFromFront",
+            "priority": 10,
             "catalog":"Hurt",
             "cancelTag":[],
             "beCancelledTag":[],
@@ -196,6 +197,7 @@
             "id":"HurtFromBackward",
             "animKey":"HurtFromBack",
             "catalog":"Hurt",
+            "priority": 10,
             "cancelTag":[],
             "beCancelledTag":[],
             "tempBeCancelledTag":[],
@@ -227,6 +229,7 @@
             "id":"BeatenFromForward",
             "animKey":"BeatenFromFront",
             "catalog":"Beaten",
+            "priority": 11,
             "cancelTag":[],
             "beCancelledTag":[],
             "tempBeCancelledTag":[],
@@ -258,6 +261,7 @@
             "id":"BeatenFromBackward",
             "animKey":"BeatenFromBack",
             "catalog":"Beaten",
+            "priority": 11,
             "cancelTag":[],
             "beCancelledTag":[],
             "tempBeCancelledTag":[],
@@ -516,6 +520,7 @@
             "id":"TwinKick",
             "animKey":"TwinKick",
             "catalog":"Skill",
+            "priority": 1,
             "cancelTag":[
                 {
                     "tag":"InitAction",
@@ -598,6 +603,7 @@
         {
             "id":"TwinKickAutoCombo",
             "animKey":"TwinKick2",
+            "priority": 2,
             "catalog":"Skill",
             "cancelTag":[],
             "beCancelledTag":[],

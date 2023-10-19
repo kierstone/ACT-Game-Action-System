@@ -130,6 +130,12 @@ public struct ActionInfo
     public ScriptMethodInfo rootMotionTween;
 
     /// <summary>
+    /// 优先级
+    /// 一个动作的基础优先级，优先级越高的动作越可能被选中
+    /// </summary>
+    public int priority;
+
+    /// <summary>
     /// 是否翻转角色的朝向，在这个demo里面，角色面向是一个严肃的属性
     /// 并不是每个游戏的角色面向都是如此严肃的，具体看游戏设计
     /// 所以有些动作会改变角色的面向，他未必是转身动画，而是可能动作中转身、再转身

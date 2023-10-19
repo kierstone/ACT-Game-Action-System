@@ -132,7 +132,7 @@ public class ActionController : MonoBehaviour
         {
             if (CanActionCancelCurrent(action, pec, true, out BeCancelledTag bcTag, out CancelTag cancelTag))
             {
-                _preorderActions.Add(new PreorderActionInfo(action.id, bcTag.priority + cancelTag.priority,
+                _preorderActions.Add(new PreorderActionInfo(action.id, bcTag.priority + cancelTag.priority + action.priority,
                     Mathf.Min(bcTag.fadeOutPercentage, cancelTag.fadeInPercentage), cancelTag.startFromPercentage));
             }
         }
@@ -411,7 +411,7 @@ public class ActionController : MonoBehaviour
                     {
                         ActionId = picked.id,
                         FromNormalized = acInfo.fromNormalized,
-                        Priority = acInfo.priority,
+                        Priority = acInfo.priority + picked.priority,
                         TransitionNormalized = acInfo.transNormalized,
                     });
                 }
@@ -425,7 +425,7 @@ public class ActionController : MonoBehaviour
                     {
                         ActionId = aInfo.id,
                         FromNormalized = acInfo.fromNormalized,
-                        Priority = acInfo.priority,
+                        Priority = acInfo.priority + aInfo.priority,
                         TransitionNormalized = acInfo.transNormalized,
                     });
                 }
