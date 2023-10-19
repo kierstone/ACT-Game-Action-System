@@ -379,12 +379,12 @@
                     "attack": 0.3,
                     "forceDir": 0,
                     "pushPower": {
-                        "moveDistance": {"x": 0.6, "y": 0, "z": 0},
+                        "moveDistance": {"x": 0.1, "y": 0, "z": 0},
                         "inSec": 0.08,
-                        "tweenMethod": "Slower"
+                        "tweenMethod": "Slowly"
                     },
-                    "hitStun": 0.22,
-                    "freeze": 0.15,
+                    "hitStun": 0.12,
+                    "freeze": 0.05,
                     "canHitSameTarget": 1,
                     "hitSameTargetDelay": 1,
                     "selfActionChange": {
@@ -468,12 +468,12 @@
                     "attack": 0.3,
                     "forceDir": 0,
                     "pushPower": {
-                        "moveDistance": {"x": 0.6, "y": 0, "z": 0},
-                        "inSec": 0.08,
-                        "tweenMethod": "Slower"
+                        "moveDistance": {"x": 0.2, "y": 0, "z": 0},
+                        "inSec": 0.12,
+                        "tweenMethod": "Slowly"
                     },
-                    "hitStun": 0.22,
-                    "freeze": 0.15,
+                    "hitStun": 0.12,
+                    "freeze": 0.05,
                     "canHitSameTarget": 1,
                     "hitSameTargetDelay": 1,
                     "selfActionChange": {
@@ -554,18 +554,19 @@
                     "attack": 0.25,
                     "forceDir": 0,
                     "pushPower": {
-                        "moveDistance": {"x": 0.1, "y": 0, "z": 0},
-                        "inSec": 0.02,
-                        "tweenMethod": ""
+                        "moveDistance": {"x": 0.2, "y": 0, "z": 0},
+                        "inSec": 0.06,
+                        "tweenMethod": "Slowly"
                     },
-                    "hitStun": 0.22,
-                    "freeze": 0.15,
+                    "hitStun": 0.12,
+                    "freeze": 0.05,
                     "canHitSameTarget": 1,
                     "hitSameTargetDelay": 1,
                     "selfActionChange": {
                         "changeType":1,
                         "param":"TwinKickAutoCombo",
-                        "priority":0
+                        "priority":0,
+                        "fromNormalized" : 0.25
                     },
                     "targetActionChange": {
                         "changeType":2,
@@ -619,11 +620,11 @@
                     "forceDir": 0,
                     "pushPower": {
                         "moveDistance": {"x": 0.7, "y": 0, "z": 0},
-                        "inSec": 0.18,
-                        "tweenMethod": ""
+                        "inSec": 0.26,
+                        "tweenMethod": "Slowly"
                     },
-                    "hitStun": 0.22,
-                    "freeze": 0.15,
+                    "hitStun": 0.12,
+                    "freeze": 0.05,
                     "canHitSameTarget": 1,
                     "hitSameTargetDelay": 1,
                     "selfActionChange": {

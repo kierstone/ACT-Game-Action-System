@@ -122,10 +122,23 @@ public class GameMain : MonoBehaviour
                 : defensePhase.selfActionChange;
         //两人相向则翻转，否则不翻转
         defender.action.PreorderActionByActionChangeInfo(defenderChange, attackerDir);
-
-        // Debug.Log("defender preorder action : " + defenderChange.param + " > " + defenderChange.changeType + " > " +
-        //           defenderChange.priority +
-        //           defender.action.anim.GetCurrentAnimatorStateInfo(0).normalizedTime.ToString("P3"));
+        
+        //双方硬直
+        attacker.action.SetFreezing(attackInfo.freeze);
+        defender.action.SetFreezing(attackInfo.hitStun);
+        
+        //造成位移
+        Vector3 moveDis = new Vector3(
+            attackInfo.pushPower.moveDistance.x * (attackerDir == ForceDirection.Forward ? 1 : -1),
+            attackInfo.pushPower.moveDistance.y,
+            attackInfo.pushPower.moveDistance.z
+        );
+        defender.SetForceMove(new MoveInfo
+        {
+            inSec = attackInfo.pushPower.inSec,
+            moveDistance = moveDis,
+            tweenMethod = attackInfo.pushPower.tweenMethod
+        });
         
         //造成伤害
         //todo demo里就先不做了

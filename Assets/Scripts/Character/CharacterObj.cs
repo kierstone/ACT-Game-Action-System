@@ -23,6 +23,15 @@ public class CharacterObj : MonoBehaviour
     /// 当前动作的命中记录，更换动作就清空了这个列表了
     /// </summary>
     public List<HitRecord> HitRecords { get; private set; } = new List<HitRecord>();
+
+    
+    
+    /// <summary>
+    /// 被强制移动，最多只有一个被强制移动
+    /// </summary>
+    private ForceMove _forceMove = ForceMove.NoForceMove;
+
+    private bool UnderForceMove => _forceMove.TimeElapsed < _forceMove.Data.inSec;
     
     public bool Inversed
     {
@@ -53,11 +62,6 @@ public class CharacterObj : MonoBehaviour
         action.RootMotionMove.z
     );
 
-    /// <summary>
-    /// 这一帧的移动 todo 目前只有NatureMove，还没有Forced
-    /// </summary>
-    public Vector3 ThisTickMove(float delta) => NatureMove(delta);
-
     
     
     private void Awake()
@@ -83,9 +87,17 @@ public class CharacterObj : MonoBehaviour
     private void Update()
     {
         float delta = Time.deltaTime;
-        //HitRecords
-        foreach (HitRecord record in HitRecords)
-            record.Update(delta);
+        //以下内容只有不在硬直才会执行
+        if (!action.Freezing)
+        {
+            //HitRecords
+            foreach (HitRecord record in HitRecords)
+                record.Update(delta);
+            //强制移动
+            if (UnderForceMove)
+                _forceMove.Update(delta);
+        }
+        
     }
 
     /// <summary>
@@ -127,18 +139,6 @@ public class CharacterObj : MonoBehaviour
         
         if (!_boxTouches[attackHitBox].Contains(targetBox))
             _boxTouches[attackHitBox].Add(targetBox);
-    }
-
-    /// <summary>
-    /// 是否某个攻击框正碰到了某个受击框，这里无视active的
-    /// </summary>
-    /// <param name="attackHitBox"></param>
-    /// <param name="beHitBox"></param>
-    /// <returns></returns>
-    public bool AttackBoxOverlapHitBox(AttackHitBox attackHitBox, BeHitBox beHitBox)
-    {
-        if (!_boxTouches.ContainsKey(attackHitBox)) return false;
-        return _boxTouches[attackHitBox].Contains(beHitBox);
     }
 
     /// <summary>
@@ -277,5 +277,26 @@ public class CharacterObj : MonoBehaviour
         }
 
         return null;
+    }
+    
+    /// <summary>
+    /// 这一帧的移动 todo 目前只有NatureMove，还没有Forced
+    /// </summary>
+    public Vector3 ThisTickMove(float delta)
+    {
+        if (action.Freezing) return Vector3.zero;
+        Vector3 fMove = Vector3.zero;
+        if (UnderForceMove)
+            fMove = _forceMove.MoveTween(_forceMove);
+        return NatureMove(delta) + fMove;
+    }
+
+    /// <summary>
+    /// 设置强制移动，只接受最新的一个
+    /// </summary>
+    /// <param name="force"></param>
+    public void SetForceMove(MoveInfo force)
+    {
+        _forceMove = ForceMove.FromData(force);
     }
 }

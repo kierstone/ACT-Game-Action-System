@@ -76,7 +76,14 @@ public class ActionController : MonoBehaviour
     /// </summary>
     public Vector3 RootMotionMove { get; private set; } = Vector3.zero;
 
-    
+    /// <summary>
+    /// 硬直（卡帧）时间
+    /// </summary>
+    private float _freezing = 0;
+    /// <summary>
+    /// 是否在硬直或者卡帧
+    /// </summary>
+    public bool Freezing => _freezing > 0;
 
     /// <summary>
     /// 更换动作的时候的回调函数
@@ -91,6 +98,10 @@ public class ActionController : MonoBehaviour
         float delta = Time.deltaTime;
         //没有动画就不会工作
         if (AllActions.Count <= 0) return;
+        
+        //根据硬直来调整倍率
+        anim.speed = Freezing ? 0 : 1;
+        if (_freezing > 0) _freezing -= delta;
         
         //因为动作融合，所以我们优先取下一个动作的normalized当做百分比进度
         AnimatorStateInfo asInfo = anim.GetCurrentAnimatorStateInfo(0);
@@ -420,5 +431,18 @@ public class ActionController : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    /// <summary>
+    /// 加入卡帧，卡帧会叠加，但是最多不会超过一个值，并且越接近的时候增加量越少
+    /// </summary>
+    /// <param name="freezingSec"></param>
+    public void SetFreezing(float freezingSec)
+    {
+        if (_freezing < 0) _freezing = 0;   //清理一下
+        float maxFreezing = 0.5f;   //卡帧、硬直上限
+        float addRate = Mathf.Clamp(maxFreezing - _freezing, 0, maxFreezing) / maxFreezing;
+        _freezing += freezingSec * addRate;
+        anim.speed = Freezing ? 0 : 1;
     }
 }
