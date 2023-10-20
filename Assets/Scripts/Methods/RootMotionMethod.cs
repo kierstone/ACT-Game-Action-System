@@ -19,7 +19,10 @@ public static class RootMotionMethod
                 (pec, param) =>
                 {
                     float totalDis = param.Length > 0 ? float.Parse(param[0]) : 0;
-                    return new Vector3(pec * totalDis, 0, 0);
+                    float startPec = param.Length > 1 ? float.Parse(param[1]) : 0;
+                    float endPec = param.Length > 2 ? float.Parse(param[2]) : 1;
+                    return pec <= startPec ? Vector3.zero :
+                        pec >= endPec ? new Vector3(totalDis, 0, 0) : new Vector3(pec * totalDis, 0, 0);
                 }
             },
             

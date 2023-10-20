@@ -93,6 +93,17 @@ public class ActionController : MonoBehaviour
     /// </summary>
     private Action<ActionInfo, ActionInfo> _onChangeAction = null;
 
+    /// <summary>
+    /// 当前动画百分比，放这里方便些，其实最好放一个函数里
+    /// 但是因为要访问动画百分比的频率较高，不如就一次性了
+    /// </summary>
+    private float _pec = 0;
+    
+    /// <summary>
+    /// 之所以我们都用Update而不是Fixed，因为我们要依赖的核心是Input和Animator
+    /// 用Update做动作游戏会有很多问题，比如跳过了可以Cancel的帧
+    /// 但是无奈，毕竟用了unity
+    /// </summary>
     private void Update()
     {
         float delta = Time.deltaTime;
@@ -107,18 +118,18 @@ public class ActionController : MonoBehaviour
         AnimatorStateInfo asInfo = anim.GetCurrentAnimatorStateInfo(0);
         AnimatorStateInfo nextStateInfo = anim.GetNextAnimatorStateInfo(0);
         //获得现在的百分比时间，因为会大于等于100%（你敢信，这就是Unity这个愚蠢做法的无奈之处）所以要clamp一下
-        float pec = Mathf.Clamp01(nextStateInfo.length > 0 ? nextStateInfo.normalizedTime : asInfo.normalizedTime);
+        _pec = Mathf.Clamp01(nextStateInfo.length > 0 ? nextStateInfo.normalizedTime : asInfo.normalizedTime);
         
         //算一下攻击盒跟受击盒
-        CalculateBoxInfo(_wasPercentage, pec);
+        CalculateBoxInfo(_wasPercentage, _pec);
         
         //移动输入接受
-        CalculateInputAcceptance(_wasPercentage, pec);
+        CalculateInputAcceptance(_wasPercentage, _pec);
         
         //算一下2帧之间的RootMotion变化
         if (!String.IsNullOrEmpty(_rootMotion.method) && RootMotionMethod.Methods.ContainsKey(_rootMotion.method))
         {
-            Vector3 rmThisTick = RootMotionMethod.Methods[_rootMotion.method](pec, _rootMotion.param);
+            Vector3 rmThisTick = RootMotionMethod.Methods[_rootMotion.method](_pec, _rootMotion.param);
             Vector3 rmLastTick = RootMotionMethod.Methods[_rootMotion.method](_wasPercentage, _rootMotion.param);
             RootMotionMove = rmThisTick - rmLastTick;
             //Debug.Log("RootMotion distance " + RootMotionMove + "=>" + pec + " - " + _wasPercentage);
@@ -130,7 +141,7 @@ public class ActionController : MonoBehaviour
         //开始观察每个动作，如果他们可以cancel当前动作，并且操作存在，那么就会添加到预约列表里面
         foreach (ActionInfo action in AllActions)
         {
-            if (CanActionCancelCurrent(action, pec, true, out BeCancelledTag bcTag, out CancelTag cancelTag))
+            if (CanActionCancelCurrent(action, _pec, true, out BeCancelledTag bcTag, out CancelTag cancelTag))
             {
                 _preorderActions.Add(new PreorderActionInfo(action.id, bcTag.priority + cancelTag.priority + action.priority,
                     Mathf.Min(bcTag.fadeOutPercentage, cancelTag.fadeInPercentage), cancelTag.startFromPercentage));
@@ -138,13 +149,13 @@ public class ActionController : MonoBehaviour
         }
         
         //如果要更换了就预约下一个动作
-        if (_preorderActions.Count <= 0 && (pec >= 1 || CurrentAction.autoTerminate))
+        if (_preorderActions.Count <= 0 && (_pec >= 1 || CurrentAction.autoTerminate))
         {
             _preorderActions.Add(new PreorderActionInfo(CurrentAction.autoNextActionId));
         }
         
         //冒泡所有的候选动作，得出应该切换的动作
-        _wasPercentage = pec;   //先设置这个，之后可能会被ChangeAction所改变
+        _wasPercentage = _pec;   //先设置这个，之后可能会被ChangeAction所改变
         if (_preorderActions.Count > 0)
         {
             //有需要更换的动画就更换
@@ -152,7 +163,7 @@ public class ActionController : MonoBehaviour
                 (candidate1, candidate2) => candidate1.Priority > candidate2.Priority ? -1 : 1
                 );
             if (_preorderActions[0].ActionId == CurrentAction.id && CurrentAction.keepPlayingAnim)
-                KeepAction(pec);
+                KeepAction(_pec);
             else
                 ChangeAction(_preorderActions[0].ActionId, _preorderActions[0].TransitionNormalized, _preorderActions[0].FromNormalized);
         }
@@ -445,4 +456,31 @@ public class ActionController : MonoBehaviour
         _freezing += freezingSec * addRate;
         anim.speed = Freezing ? 0 : 1;
     }
+
+    /// <summary>
+    /// 开启临时的CancelTag
+    /// </summary>
+    /// <param name="beCancelledTag"></param>
+    public void AddTempBeCancelledTag(TempBeCancelledTag beCancelledTag)
+    {
+        CurrentBeCancelledTag.Add(BeCancelledTag.FromTemp(beCancelledTag, _pec));
+    }
+
+    /// <summary>
+    /// 根据TempBeCancelledTag的id来开启
+    /// </summary>
+    /// <param name="tempTagId"></param>
+    public void AddTempBeCancelledTag(string tempTagId)
+    {
+        foreach (TempBeCancelledTag beCancelledTag in CurrentAction.tempBeCancelledTag)
+        {
+            if (beCancelledTag.id == tempTagId)
+            {
+                AddTempBeCancelledTag(beCancelledTag);
+                return;
+            }
+        }
+    }
+    
+    
 }

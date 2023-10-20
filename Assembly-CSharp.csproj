@@ -57,7 +57,6 @@
      <Compile Include="Assets\Scripts\Character\Action\PercentageRange.cs" />
      <Compile Include="Assets\Scripts\Character\Boxes\AttackHitBox.cs" />
      <Compile Include="Assets\Scripts\Character\Action\AttackInfo.cs" />
-     <Compile Include="Assets\Scripts\Methods\MoveTween.cs" />
      <Compile Include="Assets\Scripts\Character\GameData.cs" />
      <Compile Include="Assets\Scripts\Character\Boxes\BeHitBox.cs" />
      <Compile Include="Assets\Scripts\Character\Action\ActionChangeInfo.cs" />

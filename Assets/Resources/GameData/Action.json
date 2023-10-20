@@ -357,7 +357,7 @@
                 {
                     "id":"PunchCombo1",
                     "percentage":0.1,
-                    "cancelTag":["Punch1"],
+                    "cancelTag":["Punch2"],
                     "fadeOutPercentage":0.05
                 }
             ],
@@ -422,6 +422,104 @@
                     }
                 }
             ]
+        },
+        {
+            "id":"Punch2",
+            "animKey":"Punch2",
+            "catalog":"Punch",
+            "cancelTag":[
+                {
+                    "tag":"Punch2",
+                    "startFromPercentage":0,
+                    "fadeInPercentage":0.05
+                }
+            ],
+            "beCancelledTag": [],
+            "tempBeCancelledTag":[
+                {
+                    "id":"PunchCombo2",
+                    "percentage":0.1,
+                    "cancelTag":["Punch1"],
+                    "fadeOutPercentage":0.05
+                }
+            ],
+            "commands":[
+                {
+                    "keySequence":[100],
+                    "validInSec":0.05
+                }
+            ],
+            "inputAcceptance": [],
+            "autoNextActionId":"BoxingStand",
+            "attackPhase": [
+                {
+                    "inPercentage": [{"min": 0.4, "max": 0.5}],
+                    "tag":["RightPunch"],
+                    "attackPhase": 0,
+                    "priority": 0
+                }
+            ],
+            "attacks": [
+                {
+                    "phase": 0,
+                    "attack": 0.45,
+                    "forceDir": 0,
+                    "pushPower": {
+                        "说明": [
+                            "这里y坐标变化是为了有略微击飞的效果",
+                            "这个做法导致角色微微跃起从效果上来说是错的，尽管这一拳有点勾拳的意思",
+                            "但是正确的做法是受击动作本身看起来就是有点飞起的那种，是美术做的迎合这类勾拳受击",
+                            "而不应该依赖于程序逻辑去做到这个效果"
+                        ],
+                        "moveDistance": {"x": 0.1, "y": 0.2, "z": 0},
+                        "inSec": 0.12,
+                        "tweenMethod": "Slowly"
+                    },
+                    "hitStun": 0.12,
+                    "freeze": 0.08,
+                    "canHitSameTarget": 1,
+                    "hitSameTargetDelay": 1,
+                    "selfActionChange": {
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "targetActionChange": {
+                        "changeType":2,
+                        "param":"Hurt",
+                        "priority":5
+                    },
+                    "tempBeCancelledTagTurnOn": ["PunchCombo2"]
+                }
+            ],
+            "defensePhase":[
+                {
+                    "inPercentage":[{"min":0, "max":1}],
+                    "tag":["Hurt"],
+                    "priority":0,
+                    "tempBeCancelledTagTurnOn":[],
+                    "attackerActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    },
+                    "selfActionChange":{
+                        "changeType":0,
+                        "param":"",
+                        "priority":0
+                    }
+                }
+            ],
+            "rootMotionTween": {
+                "method": "GoStraight",
+                "说明": [
+                    "直线前进函数，参见RootMotionMethod.Methods[\"GoStraight\"]",
+                    "参数1：最终往前多少米（x）",
+                    "参数2：从动画百分之多少开始移动",
+                    "参数3：到动画百分比多少结束移动"
+                ],
+                "param": ["0.2","0.12","0.22"]
+            }
         },
         {
             "id":"Kick1",

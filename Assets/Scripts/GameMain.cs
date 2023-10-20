@@ -39,11 +39,28 @@ public class GameMain : MonoBehaviour
         float dt = Time.deltaTime;
         //处理攻击和碰撞
         DealWithAttacks();
-        //先处理角色的移动
-        player.transform.position += player.ThisTickMove(dt);
+        //先处理角色的移动，这里没有地形，所以y<0就是falling了
+        Transform pTrans = player.transform;
+        Vector3 pWas = pTrans.position;
+        player.Falling = pWas.y > 0;
+        Vector3 pMoved = player.ThisTickMove(dt);
+        player.transform.position  = new Vector3(
+            pWas.x + pMoved.x,
+            Mathf.Max(pWas.y + pMoved.y),
+            pWas.z + pMoved.z
+        );
+        
         foreach (CharacterObj ene in enemy)
         {
-            ene.transform.position += ene.ThisTickMove(dt);
+            Transform eTrans = ene.transform;
+            Vector3 eWas = eTrans.position;
+            ene.Falling = eWas.y > 0;
+            Vector3 eMoved = ene.ThisTickMove(dt);
+            ene.transform.position  = new Vector3(
+                eWas.x + eMoved.x,
+                Mathf.Max(0, eWas.y + eMoved.y),
+                eWas.z + eMoved.z
+            );
         }
         
         
@@ -146,6 +163,12 @@ public class GameMain : MonoBehaviour
             moveDistance = moveDis,
             tweenMethod = attackInfo.pushPower.tweenMethod
         });
+        
+        //CancelTag开启
+        foreach (string cTag in attackInfo.tempBeCancelledTagTurnOn)
+        {
+            attacker.action.AddTempBeCancelledTag(cTag);
+        }
         
         //造成伤害
         //todo demo里就先不做了

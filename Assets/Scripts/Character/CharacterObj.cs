@@ -15,6 +15,41 @@ public class CharacterObj : MonoBehaviour
     public InputToCommand input;
 
     /// <summary>
+    /// 重量，影响到下落速度，第一秒的时候下降weight，第1-2秒的时候下降就是2*weight了，以此类推
+    /// 实际上动作游戏中是每帧增加一个重量，但是我们用的是Update，帧的概念是电影行业的，不是做游戏的
+    /// 所以我们不得不拟合一个，按照每秒作为单位来用deltaTime做拟合
+    /// </summary>
+    public float weight = 4.5f;
+
+    /// <summary>
+    /// 是否正在下落
+    /// </summary>
+    private bool _falling = false;
+    /// <summary>
+    /// 下落的重量
+    /// </summary>
+    private float _curWeight = 0;
+
+    /// <summary>
+    /// 当前是否下降这个东西，并不是由角色自己说了算的，这是绝大多数游戏教程，也包括UE的游戏框架在内，完全做错的地方
+    /// 因为是否下落取决于地形等游戏中的其他元素，不仅仅取决于角色自身，甚至几乎不取决于角色自己
+    /// 而角色不应该依赖于其他这么多的元素，所以应该由“最小弟”的GameMain这一层来告诉我，我该不该下落
+    /// </summary>
+    public bool Falling
+    {
+        get => _falling;
+        set
+        {
+            if (value && !_falling)
+            {
+                //得初始化一下当前重量         
+                _curWeight = 0;
+            }
+            _falling = value;
+        }
+    }
+
+    /// <summary>
     /// 碰撞盒的碰撞信息，现在这里缓存一下
     /// </summary>
     private Dictionary<AttackHitBox, List<BeHitBox>> _boxTouches = new Dictionary<AttackHitBox, List<BeHitBox>>();
@@ -31,7 +66,7 @@ public class CharacterObj : MonoBehaviour
     /// </summary>
     private ForceMove _forceMove = ForceMove.NoForceMove;
 
-    private bool UnderForceMove => _forceMove.TimeElapsed < _forceMove.Data.inSec;
+    private bool UnderForceMove => _forceMove.TimeElapsed <= _forceMove.Data.inSec;
     
     public bool Inversed
     {
@@ -58,7 +93,7 @@ public class CharacterObj : MonoBehaviour
         ((WishToMoveForward ? (moveSpeed * action.MoveInputAcceptance * delta) :
             WishToMoveBackward ? (-moveSpeed * action.MoveInputAcceptance * delta) : 0) + action.RootMotionMove.x) *
         (Inversed ? -1 : 1),
-        action.RootMotionMove.y,
+        action.RootMotionMove.y - _curWeight,   //unity的坐标系y是反过来的
         action.RootMotionMove.z
     );
 
@@ -93,9 +128,6 @@ public class CharacterObj : MonoBehaviour
             //HitRecords
             foreach (HitRecord record in HitRecords)
                 record.Update(delta);
-            //强制移动
-            if (UnderForceMove)
-                _forceMove.Update(delta);
         }
         
     }
@@ -284,11 +316,20 @@ public class CharacterObj : MonoBehaviour
     /// </summary>
     public Vector3 ThisTickMove(float delta)
     {
+        //硬直时候不做移动
         if (action.Freezing) return Vector3.zero;
-        Vector3 fMove = Vector3.zero;
+        //有强制位移有限强制位移
         if (UnderForceMove)
-            fMove = _forceMove.MoveTween(_forceMove);
-        return NatureMove(delta) + fMove;
+        {
+            Vector3 fMove = _forceMove.MoveTween(_forceMove);
+            _forceMove.Update(delta);
+            return fMove;
+        }
+        //下落重量的增幅，不应该在Update做，而是外部调用update的地方去做
+        if (_falling) _curWeight += weight * delta;
+        else _curWeight = 0;
+        //有强制位移的时候强制位移，没有的时候自然移动
+        return  NatureMove(delta);
     }
 
     /// <summary>
