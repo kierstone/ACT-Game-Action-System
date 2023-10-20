@@ -310,6 +310,9 @@ public class ActionController : MonoBehaviour
         ActionInfo aInfo = GetActionById(actionId, out bool foundAction);
         if (foundAction)
         {
+            //清除掉非方向操作，连招手感得这么保障，当然刻意为了更容易连招，可以去掉这个
+            command.CleanNonDirectionInputs();
+            
             _onChangeAction?.Invoke(CurrentAction, aInfo);
             anim.CrossFade(aInfo.animKey, transitionNormalized, 0, fromNormalized);
             CurrentAction = aInfo;
@@ -332,6 +335,8 @@ public class ActionController : MonoBehaviour
             transform.eulerAngles = new Vector3(0, command.inversed ? 270 : 90, 0);
             //修正完毕才接受新的是否要转向，因为可能这个动作本身自带转向
             if (aInfo.flip) command.inversed = !command.inversed;
+            
+            
         }
     }
 

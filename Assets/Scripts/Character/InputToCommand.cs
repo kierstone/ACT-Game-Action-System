@@ -39,6 +39,14 @@ public class InputToCommand : MonoBehaviour
     private double _timeStamp = 0;
 
     /// <summary>
+    /// 非方向输入得有个cd，不然频率太高影响连招手感
+    /// 如果没有这个，非常容易出现“全自动连续攻击”，如果攻击派生动作的按键一样的话
+    /// </summary>
+    private const float NonDirectionInputCooldown = 0.09f;
+
+    private float _nonDirectCooldown = 0;
+    
+    /// <summary>
     /// 值得注意的是：
     /// 好的输入是会判断up和down的，这样才能得出是tap还是holding
     /// 但是操作并不是这个demo主要表现的内容，所以我就偷了个懒
@@ -47,6 +55,7 @@ public class InputToCommand : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        float dt = Time.deltaTime;
         //开始去掉已经过期的操作记录
         int index = 0;
         while (index < _input.Count)
@@ -61,15 +70,24 @@ public class InputToCommand : MonoBehaviour
         {
             bool noKey = true;
             //加入新的输入
-            if (Input.GetButton("Punch"))
+            if (_nonDirectCooldown <= 0)
             {
-                AddInput(KeyMap.Punch);
-                noKey = false;
+                if (Input.GetButton("Punch"))
+                {
+                    AddInput(KeyMap.Punch);
+                    noKey = false;
+                }
+                if (Input.GetButton("Kick"))
+                {
+                    AddInput(KeyMap.Kick);
+                    noKey = false;
+                }
+
+                if (!noKey) _nonDirectCooldown = NonDirectionInputCooldown;
             }
-            if (Input.GetButton("Kick"))
+            else
             {
-                AddInput(KeyMap.Kick);
-                noKey = false;
+                _nonDirectCooldown -= dt;
             }
 
             float xInput = Input.GetAxis("Horizontal");
@@ -243,6 +261,44 @@ public class InputToCommand : MonoBehaviour
         }
 
         return res;
+    }
+
+    /// <summary>
+    /// 删除所有的非方向输入，在变化动作的时候删除
+    /// </summary>
+    public void CleanNonDirectionInputs()
+    {
+        int index = 0;
+        while (index < _input.Count)
+            if (!IsDirectionInput(_input[index].Key)) _input.RemoveAt(index);
+            else index++;
+        index = 0;
+        while (index < _newInputs.Count)
+            if (!IsDirectionInput(_newInputs[index].Key)) _newInputs.RemoveAt(index);
+            else index++;
+        //_nonDirectCooldown = NonDirectionInputCooldown;
+    }
+
+    /// <summary>
+    /// 一个输入是否是方向输入
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static bool IsDirectionInput(KeyMap key)
+    {
+        List<KeyMap> keys = new List<KeyMap>
+        {
+            KeyMap.Backward,
+            KeyMap.UpBackward,
+            KeyMap.Up,
+            KeyMap.UpForward,
+            KeyMap.Forward,
+            KeyMap.DuckForward,
+            KeyMap.Duck,
+            KeyMap.DuckBackward,
+            KeyMap.NoDirection //这个也会出现在搓招操作，所以得算方向
+        };
+        return keys.Contains(key);
     }
 }
 

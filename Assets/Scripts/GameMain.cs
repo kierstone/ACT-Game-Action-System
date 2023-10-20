@@ -173,6 +173,7 @@ public class GameMain : MonoBehaviour
         //造成伤害
         //todo demo里就先不做了
         
+        //增加命中记录，确保不连续命中
         attacker.AddHitRecord(defender, attackInfo.phase);
     }
 }
