@@ -165,7 +165,8 @@ public class ActionController : MonoBehaviour
             if (_preorderActions[0].ActionId == CurrentAction.id && CurrentAction.keepPlayingAnim)
                 KeepAction(_pec);
             else
-                ChangeAction(_preorderActions[0].ActionId, _preorderActions[0].TransitionNormalized, _preorderActions[0].FromNormalized);
+                ChangeAction(_preorderActions[0].ActionId, _preorderActions[0].TransitionNormalized,
+                    _preorderActions[0].FromNormalized, _preorderActions[0].FreezingAfterChangeAction);
         }
         
         //清理一下预约列表
@@ -305,7 +306,8 @@ public class ActionController : MonoBehaviour
     /// <param name="actionId">目标actionId</param>
     /// <param name="transitionNormalized">融合百分比时间</param>
     /// <param name="fromNormalized">从百分之多少开始播放新的动画</param>
-    private void ChangeAction(string actionId, float transitionNormalized, float fromNormalized)
+    /// <param name="freezingAfterChange">切换动作后，硬直多少秒</param>
+    private void ChangeAction(string actionId, float transitionNormalized, float fromNormalized, float freezingAfterChange)
     {
         ActionInfo aInfo = GetActionById(actionId, out bool foundAction);
         if (foundAction)
@@ -322,6 +324,8 @@ public class ActionController : MonoBehaviour
             {
                 CurrentBeCancelledTag.Add(beCancelledTag);
             }
+
+            _freezing = freezingAfterChange;
             
             ActiveBeHitBoxInfo.Clear();
             ActiveBeHitBoxTag.Clear();
@@ -335,7 +339,6 @@ public class ActionController : MonoBehaviour
             transform.eulerAngles = new Vector3(0, command.inversed ? 270 : 90, 0);
             //修正完毕才接受新的是否要转向，因为可能这个动作本身自带转向
             if (aInfo.flip) command.inversed = !command.inversed;
-            
             
         }
     }
@@ -395,7 +398,7 @@ public class ActionController : MonoBehaviour
     {
         AllActions.Clear();
         if (actions != null) AllActions = actions;
-        ChangeAction(defaultActionId, 0, 0);
+        ChangeAction(defaultActionId, 0, 0, 0);
     }
 
     /// <summary>
@@ -403,7 +406,8 @@ public class ActionController : MonoBehaviour
     /// </summary>
     /// <param name="acInfo">变换动作信息</param>
     /// <param name="forceDir">如有必要（其实就是byCatalog）得给个动作受力方向</param>
-    public void PreorderActionByActionChangeInfo(ActionChangeInfo acInfo, ForceDirection forceDir)
+    /// <param name="freezing">如果切换到这个动作，硬直多少秒</param>
+    public void PreorderActionByActionChangeInfo(ActionChangeInfo acInfo, ForceDirection forceDir, float freezing = 0)
     {
         switch (acInfo.changeType)
         {
@@ -429,6 +433,7 @@ public class ActionController : MonoBehaviour
                         FromNormalized = acInfo.fromNormalized,
                         Priority = acInfo.priority + picked.priority,
                         TransitionNormalized = acInfo.transNormalized,
+                        FreezingAfterChangeAction = freezing
                     });
                 }
                 break;
@@ -443,6 +448,7 @@ public class ActionController : MonoBehaviour
                         FromNormalized = acInfo.fromNormalized,
                         Priority = acInfo.priority + aInfo.priority,
                         TransitionNormalized = acInfo.transNormalized,
+                        FreezingAfterChangeAction = freezing
                     });
                 }
                 break;
@@ -451,6 +457,7 @@ public class ActionController : MonoBehaviour
 
     /// <summary>
     /// 加入卡帧，卡帧会叠加，但是最多不会超过一个值，并且越接近的时候增加量越少
+    /// 注意，这只能是卡帧freezing，因为他会立即暂停角色动作，而受击的hitStun是在切换动作之后，切勿走这里
     /// </summary>
     /// <param name="freezingSec"></param>
     public void SetFreezing(float freezingSec)

@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -145,13 +144,12 @@ public class GameMain : MonoBehaviour
                 ? attackInfo.targetActionChange
                 : defensePhase.selfActionChange;
         //两人相向则翻转，否则不翻转
-        defender.action.PreorderActionByActionChangeInfo(defenderChange, attackerDir);
+        defender.action.PreorderActionByActionChangeInfo(defenderChange, attackerDir, attackInfo.hitStun);
         
-        //双方硬直
+        //攻击方卡帧
         attacker.action.SetFreezing(attackInfo.freeze);
-        defender.action.SetFreezing(attackInfo.hitStun);
         
-        //造成位移
+        //受击方位移（攻击方位移发生在动作本身了）
         Vector3 moveDis = new Vector3(
             attackInfo.pushPower.moveDistance.x * (attackerDir == ForceDirection.Forward ? 1 : -1),
             attackInfo.pushPower.moveDistance.y,
