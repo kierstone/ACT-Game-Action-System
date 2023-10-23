@@ -215,8 +215,20 @@ public class CharacterObj : MonoBehaviour
         attackBox = null;
         targetBox = null;
         attackPhase = new AttackInfo();
+        
         defensePhase = new BeHitBoxTurnOnInfo();
         if (!target) return false;
+        
+        //目标开启的受击盒
+        List<string> activeBoxTag = new List<string>();
+        foreach (BeHitBoxTurnOnInfo info in target.action.ActiveBeHitBoxInfo)
+        {
+            foreach (string t in info.tag)
+            {
+                if (!activeBoxTag.Contains(t)) activeBoxTag.Add(t);
+            }
+        }
+        
         //命中对方的所有攻击框
         foreach (AttackBoxTurnOnInfo boxInfo in action.ActiveAttackBoxInfo)
         {
@@ -227,12 +239,17 @@ public class CharacterObj : MonoBehaviour
                 
                 //命中的最有价值的受击框才行
                 BeHitBox best = null;
+                int bestPriority = 0;
                 foreach (BeHitBox hitBox in touch.Value)
                 {
-                    if (!hitBox.Active || hitBox.master != target) continue;
-                    if (!best|| hitBox.Priority > best.Priority)
+                    if (!hitBox.Active || hitBox.master != target || !hitBox.TagHit(activeBoxTag)) continue;
+                    BeHitBoxTurnOnInfo info = GetDefensePhaseByBeHitBox(hitBox);
+                    int thisPriority = hitBox.Priority + info.priority;
+                    if (!best || thisPriority > bestPriority)
                     {
                         best = hitBox;
+                        bestPriority = thisPriority;
+                        defensePhase = info;
                     }
                 }
                 //一个没找到，当然就……
@@ -243,7 +260,6 @@ public class CharacterObj : MonoBehaviour
                 targetBox = best;
                 if (boxInfo.attackPhase >= 0 && boxInfo.attackPhase < action.CurrentAction.attacks.Length)
                     attackPhase = action.CurrentAction.attacks[boxInfo.attackPhase];
-                defensePhase = GetDefensePhaseByBeHitBox(best);
                 return true;
             }
         }

@@ -167,6 +167,10 @@ public class GameMain : MonoBehaviour
         {
             attacker.action.AddTempBeCancelledTag(cTag);
         }
+        foreach (string cTag in defensePhase.tempBeCancelledTagTurnOn)
+        {
+            defender.action.AddTempBeCancelledTag(cTag);
+        }
         
         //造成伤害
         //todo demo里就先不做了

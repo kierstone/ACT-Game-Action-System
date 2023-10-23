@@ -55,4 +55,19 @@ public class BeHitBox : MonoBehaviour
     {
         Active = master && master.ShouldBeHitBoxActive(tags);
     }
+
+    /// <summary>
+    /// 是否有一个tag在checkTags里面
+    /// </summary>
+    /// <param name="checkTags"></param>
+    /// <returns></returns>
+    public bool TagHit(List<string> checkTags)
+    {
+        foreach (string t in tags)
+        {
+            if (checkTags.Contains(t)) return true;
+        }
+
+        return false;
+    }
 }
