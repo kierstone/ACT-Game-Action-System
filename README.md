@@ -12,4 +12,5 @@ NOT by state machine, but by CANCEL system.
 动作游戏的动作切换，核心依赖于Cancel，所以没有动作帧。<br>
 由于是用Unity开发的，不得不妥协于Unity的框架，所以遗憾的是：没法用帧来实现正确的动作游戏动作框架。<br>
 但是幸运的是：我们可以顺着Unity凑出一个以动作为单位的框架。<br>
-这个框架的配套文章您可以在微信公众号“千猴马的游戏设计之道”中找到，文章中会有比注释更详细的描述。
+这个框架的配套文章您可以在微信公众号“千猴马的游戏设计之道”中找到，文章中会有比注释更详细的描述。<br>
+文章链接：https://mp.weixin.qq.com/s?__biz=MzA3NjQzMzYxMw==&mid=2650635859&idx=1&sn=ba171829af2fc461f5e5be9dcafc804e&chksm=87688ff1b01f06e77d42952eb6207feb736781798c7bdaaeb6df60f40986d6a452e8824ed94c&mpshare=1&scene=23&srcid=1025GxLrb9dTlBpNgWSbaQiN&sharer_shareinfo=7bd6fe24079630c5f2f68701fc31a9a8&sharer_shareinfo_first=7bd6fe24079630c5f2f68701fc31a9a8#rd
